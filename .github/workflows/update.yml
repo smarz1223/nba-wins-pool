@@ -1,0 +1,39 @@
+name: Update NBA Wins data
+
+on:
+  schedule:
+    # 11:37 UTC daily = 7:37 AM EDT / 6:37 AM EST. Off the :00 mark, which GitHub delays.
+    - cron: "37 11 * * *"
+  workflow_dispatch:   # adds a "Run workflow" button on the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nba-wins-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch results and build data.json
+        run: python fetch_data.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898319+github-actions[bot]@users.noreply.github.com"
+          git add data.json games.json
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Daily data update"
+            git push
+          fi
