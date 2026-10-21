@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBA Wins Pool 2026-27</title>
+<!-- Cloudflare Web Analytics: paste the snippet for nbawins.redplanetanalytics.com here -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--cab:#130f26;--panel:#1d1839;--panel2:#262049;--line:#3a3270;
+--flame:#ff6b1a;--marquee:#ffd84a;--board:#35d6ff;--hot:#ff3d7f;
+--text:#f1ecff;--dim:#a9a0d6;--dim2:#7a71ab;--win:#5cff8a;--loss:#ff5a5a;
+--px:'Press Start 2P',monospace;--ui:'Chakra Petch',system-ui,sans-serif;
+}
+html{background:var(--cab)}
+body{background:radial-gradient(1200px 500px at 50% -120px,#2a1f5c 0%,var(--cab) 70%) no-repeat,var(--cab);color:var(--text);font-family:var(--ui);font-size:15px;line-height:1.5;min-height:100vh}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px);z-index:200}
+a{color:var(--board)}
+:focus-visible{outline:2px solid var(--marquee);outline-offset:2px}
+.notice{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--marquee);padding:12px 16px;margin-bottom:20px;font-size:14px;color:var(--dim)}
+.notice[hidden]{display:none}
+.mock{background:var(--marquee);color:#1a1300;text-align:center;font-weight:700;font-size:12px;padding:5px 10px}
+
+/* header */
+.hdr{position:sticky;top:0;z-index:100;background:rgba(19,15,38,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.hdr-in{max-width:1200px;margin:0 auto;padding:12px 20px 0;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.logo{font-family:var(--px);font-size:18px;line-height:1.2;color:var(--marquee);text-shadow:3px 3px 0 var(--flame),6px 6px 0 rgba(0,0,0,.5);letter-spacing:1px;white-space:nowrap}
+.logo small{display:block;font-size:8px;color:var(--board);text-shadow:none;margin-top:6px;letter-spacing:2px}
+.upd{margin-left:auto;font-size:12px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.upd i{width:7px;height:7px;border-radius:50%;background:var(--win);box-shadow:0 0 8px var(--win)}
+nav{width:100%;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{background:none;border:0;color:var(--dim);font:600 14px var(--ui);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+nav button:hover{color:var(--text)}
+nav button[aria-current="page"]{color:var(--text);border-bottom-color:var(--flame)}
+
+main{max-width:1200px;margin:0 auto;padding:28px 20px 60px}
+.page{display:none}.page.on{display:block}
+h1{font-family:var(--px);font-size:20px;line-height:1.4;color:var(--text);margin-bottom:8px}
+.sub{color:var(--dim);font-size:14px;margin-bottom:22px;max-width:70ch}
+h2{font-size:17px;font-weight:700;margin:34px 0 12px;color:var(--text)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px}
+.scroll{overflow-x:auto}
+
+/* prize board */
+.prizes{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:26px}
+.prize{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 12px 11px;position:relative;min-width:0}
+.prize.live{border-color:var(--flame);box-shadow:0 0 0 1px var(--flame) inset}
+.prize.champ{background:linear-gradient(160deg,#3b2a08,#1d1839 70%);border-color:var(--marquee)}
+.prize .nm{font-size:13px;font-weight:700;color:var(--text)}
+.prize .dates{font-size:11px;color:var(--dim2)}
+.prize .amt{font-family:var(--px);font-size:13px;color:var(--marquee);margin:10px 0 8px}
+.prize .who{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prize .st{font-size:11px;color:var(--dim)}
+.prize.live .st{color:var(--flame)}
+
+/* high score table */
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:12px;font-weight:600;color:var(--dim);text-align:right;padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th.l,td.l{text-align:left}
+th[aria-sort="ascending"]::after{content:" \25B2";color:var(--flame);font-size:9px}
+th[aria-sort="descending"]::after{content:" \25BC";color:var(--flame);font-size:9px}
+td{padding:9px 10px;text-align:right;border-bottom:1px solid rgba(58,50,112,.6);white-space:nowrap}
+tbody tr:hover td{background:var(--panel2)}
+.hs td{padding:12px 10px;font-size:16px}
+.rk{font-family:var(--px);font-size:12px;color:var(--dim)}
+.hs tr:nth-child(1) .rk{color:var(--marquee)}
+.hs tr:nth-child(2) .rk{color:#d9d9e8}
+.hs tr:nth-child(3) .rk{color:#e09a5c}
+.own{font-weight:700;letter-spacing:.5px}
+.chips{display:flex;gap:4px}
+.chip{font-size:11px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--panel2);color:var(--dim);border:1px solid var(--line)}
+.pct{font-weight:700}
+.bar{display:inline-block;width:90px;height:8px;background:var(--panel2);vertical-align:middle;margin-left:8px;position:relative}
+.bar b{position:absolute;inset:0 auto 0 0;background:currentColor}
+.pos{color:var(--win)}.neg{color:var(--loss)}
+.dim{color:var(--dim2)}
+
+/* month tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tab{background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:4px;padding:8px 12px;font:600 13px var(--ui);cursor:pointer;text-align:left}
+.tab small{display:block;font-weight:500;font-size:11px;color:var(--dim2)}
+.tab[aria-selected="true"]{border-color:var(--flame);color:var(--text);background:var(--panel2)}
+.tab:disabled{opacity:.45;cursor:default}
+.callout{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:var(--panel2);border-left:4px solid var(--flame);padding:12px 16px;margin-bottom:16px;font-size:14px}
+.callout strong{font-size:16px}
+.grp td{background:rgba(255,107,26,.06);font-weight:700;font-size:13px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.chartbox{position:relative;height:330px}
+.split>.panel{display:flex;flex-direction:column}.split .chartbox{flex:1;min-height:330px}
+.wl{font-weight:700;font-size:11px;display:inline-block;width:16px;text-align:center;border-radius:2px;margin-left:2px}
+.wl.W{background:rgba(92,255,138,.18);color:var(--win)}.wl.L{background:rgba(255,90,90,.15);color:var(--loss)}
+
+/* draft board */
+.board{display:grid;grid-template-columns:auto repeat(3,1fr) auto auto;gap:6px;align-items:stretch;min-width:720px}
+.board .hd{font-size:12px;color:var(--dim);font-weight:600;padding:0 4px 4px}
+.cell{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:8px 10px;font-size:13px}
+.cell .pk{font-family:var(--px);font-size:9px;color:var(--dim2)}
+.cell .tm{font-weight:700;font-size:15px}
+.cell .meta{font-size:11px;color:var(--dim)}
+.slot{display:flex;flex-direction:column;justify-content:center;border-left:4px solid}
+.tot{text-align:right;font-variant-numeric:tabular-nums}
+
+.mb{margin-bottom:14px}
+.dkey{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-bottom:12px}
+.dkey i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.dkey .dv{border:2px solid var(--dim);background:transparent}.dkey .dp{background:var(--marquee)}
+.db{display:grid;grid-template-columns:52px 1fr 64px;align-items:center;gap:10px;height:22px;font-size:12px}
+.db .nm{font-weight:700}.db .gap{text-align:right;font-variant-numeric:tabular-nums}
+.track{position:relative;height:100%}
+.track .ln{position:absolute;top:50%;height:3px;margin-top:-1.5px;border-radius:2px}
+.track .v,.track .p{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%}
+.track .v{border:2px solid var(--dim);background:var(--panel)}
+.axis{display:grid;grid-template-columns:52px 1fr 64px;gap:10px;font-size:11px;color:var(--dim2);margin-top:6px}
+.axis .ticks{position:relative;height:14px}.axis .ticks span{position:absolute;transform:translateX(-50%)}
+.grid{position:absolute;top:0;bottom:0;width:1px;background:rgba(58,50,112,.5)}
+h3.bw{font-size:14px;font-weight:700;margin-bottom:8px}
+.bwrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(58,50,112,.6);font-size:14px}
+.bwrow:last-child{border-bottom:0}.bwrow .pk{font-family:var(--px);font-size:9px;color:var(--dim2);width:58px}
+.bwrow .v{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.vbar{display:inline-block;width:80px;height:8px;position:relative;background:var(--panel2);vertical-align:middle}
+.vbar b{position:absolute;top:0;bottom:0}
+.rules{max-width:72ch}
+.rules h2:first-child{margin-top:0}
+.rules p,.rules li{color:var(--dim);margin-bottom:8px}
+.rules ul{padding-left:20px}
+.rules strong{color:var(--text)}
+
+@media (max-width:900px){.prizes{grid-template-columns:repeat(3,1fr)}.split{grid-template-columns:1fr}}
+@media (max-width:640px){.hm{display:none}.prizes{grid-template-columns:repeat(2,1fr)}.hs td{font-size:14px;padding:10px 6px}.bar{display:none}h1{font-size:15px}.logo{font-size:14px}}
+</style>
+</head>
+<body>
+<header class="hdr"><div class="hdr-in">
+  <div class="logo">NBA WINS<small>2026-27 POOL</small></div>
+  <div class="upd"><i></i><span id="upd">Loading</span></div>
+  <nav aria-label="Pages">
+    <button data-p="standings" aria-current="page">Standings</button>
+    <button data-p="monthly">Monthly</button>
+    <button data-p="teams">Teams</button>
+    <button data-p="draft">Draft Board</button>
+    <button data-p="rules">Rules</button>
+  </nav>
+</div></header>
+
+<main>
+<div class="notice" id="notice" hidden></div>
+<section id="pg-standings" class="page on">
+  <h1>Standings</h1>
+  <p class="sub">Combined win % of each owner's three teams, all regular-season games. Point differential breaks ties.</p>
+  <div class="prizes" id="prizes"></div>
+  <div class="panel scroll"><table class="hs" id="t-st"><thead><tr>
+    <th class="l" data-k="rank" data-t="n">Rank</th><th class="l" data-k="owner">Owner</th><th class="l hm">Teams</th>
+    <th data-k="w" data-t="n">W</th><th data-k="l" data-t="n">L</th><th data-k="pct" data-t="n">Win %</th>
+    <th data-k="pd" data-t="n" class="hm">Pt Diff</th><th data-k="gb" data-t="n">GB</th></tr></thead><tbody></tbody></table>
+  </div>
+  <h2>Season race</h2>
+  <div class="panel"><div class="chartbox"><canvas id="c-race" aria-label="Cumulative win % by owner over the season"></canvas></div></div>
+</section>
+
+<section id="pg-monthly" class="page">
+  <h1>Monthly</h1>
+  <p class="sub">Each month is its own race worth $50. Only games played inside the month count, so everyone starts at zero on the 1st.</p>
+  <div class="tabs" id="mtabs" role="tablist"></div>
+  <div id="mcallout"></div>
+  <div class="split">
+    <div class="panel scroll"><table id="t-mo"><thead><tr>
+      <th class="l" data-k="rank" data-t="n">Rank</th><th class="l" data-k="owner">Owner</th>
+      <th data-k="w" data-t="n">W</th><th data-k="l" data-t="n">L</th><th data-k="pct" data-t="n">Win %</th>
+      <th data-k="pd" data-t="n">Pt Diff</th><th data-k="gp" data-t="n" class="hm">GP</th></tr></thead><tbody></tbody></table></div>
+    <div class="panel"><div class="chartbox"><canvas id="c-mo" aria-label="Win % by owner for the selected month"></canvas></div></div>
+  </div>
+  <h2>Teams this month</h2>
+  <div class="panel scroll"><table id="t-mt"><thead><tr><th class="l">Team</th><th>W</th><th>L</th><th>Win %</th><th>Pt Diff</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="pg-teams" class="page">
+  <h1>Teams</h1>
+  <p class="sub">All 30 teams. Exp Win % is the preseason Vegas win total divided by 82. Pace is the current win % stretched over 82 games.</p>
+  <h2 style="margin-top:0">Vegas vs projected wins</h2>
+  <div class="panel mb">
+    <div class="dkey"><span><i class="dv"></i>Vegas win total</span><span><i class="dp"></i>Projected wins (pace)</span><span class="dim">Sorted by gap, biggest overachievers first</span></div>
+    <div id="dumb"></div>
+  </div>
+  <h2>All teams</h2>
+  <div class="panel scroll"><table id="t-tm"><thead><tr>
+    <th data-k="pick" data-t="n">Pick</th><th class="l" data-k="abbr">Team</th><th class="l" data-k="owner">Owner</th>
+    <th data-k="w" data-t="n">W</th><th data-k="l" data-t="n">L</th><th data-k="pct" data-t="n">Win %</th><th data-k="exp_pct" data-t="n">Exp Win %</th>
+    <th data-k="pd" data-t="n" class="hm">Pt Diff</th><th class="l hm" data-k="streak">Streak</th><th class="l hm">Last 5</th>
+    <th data-k="pace" data-t="n">Pace</th><th data-k="vegas" data-t="n" class="hm">Vegas</th><th data-k="vs_vegas" data-t="n">vs Vegas</th>
+  </tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="pg-draft" class="page">
+  <h1>Draft Board</h1>
+  <p class="sub">Balanced draft order: an early first-round pick comes with late picks in rounds 2 and 3. Totals compare last season's wins and Vegas totals with wins so far.</p>
+  <div class="panel scroll"><div class="board" id="board"></div></div>
+  <h2>Best and worst picks</h2>
+  <p class="sub">Each pick is compared with the team that actually holds that rank in the league. Pick 1 is measured against the best win % in the NBA, pick 2 against the second best, and so on. Value is the gap in win %.</p>
+  <div class="split mb">
+    <div class="panel"><h3 class="bw">Best picks</h3><div id="best"></div></div>
+    <div class="panel"><h3 class="bw">Worst picks</h3><div id="worst"></div></div>
+  </div>
+  <div class="panel scroll"><table id="t-dv"><thead><tr>
+    <th data-k="pick" data-t="n">Pick</th><th class="l" data-k="abbr">Team</th><th class="l" data-k="owner">Owner</th>
+    <th data-k="actual_pct" data-t="n">Actual</th><th data-k="optimal_pct" data-t="n">Best at slot</th><th data-k="value" data-t="n">Value</th><th class="l hm">&nbsp;</th>
+  </tr></thead><tbody></tbody></table></div>
+</section>
+
+<section id="pg-rules" class="page"><div class="rules" id="rules"></div></section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var OC={'JOLLZ':'#ff7a1a','BAGS':'#ffe14d','KEV':'#2ed3ff','KARDIAN':'#ff3d9a','ADAM B':'#8cff3a',
+        'ANT':'#a98bff','MARZ':'#ff4f4f','DOM':'#f2f2f2','FUR':'#d9a46b','PHIL':'#4f7dff'};
+function oc(o){return OC[o]||'#ccc'}
+var D=null,charts={},curMonth=null;
+function pct(v){return v==null?'-':(v>=1?'1.000':v.toFixed(3).replace(/^0/,''))}
+function sg(v){return v==null?'-':(v>0?'+'+v:''+v)}
+function cls(v){return v>0?'pos':(v<0?'neg':'dim')}
+function fdate(s){var d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function teamByAbbr(a){for(var i=0;i<D.teams.length;i++)if(D.teams[i].abbr===a)return D.teams[i]}
+function chip(a){var t=teamByAbbr(a);
+  return '<span class="chip" title="'+(t?t.name+' '+t.w+'-'+t.l:a)+'">'+a+'</span>'}
+function ordinal(n){return n+(n%10==1&&n!=11?'ST':n%10==2&&n!=12?'ND':n%10==3&&n!=13?'RD':'TH')}
+
+/* nav */
+document.querySelectorAll('nav button').forEach(function(b){b.addEventListener('click',function(){show(b.dataset.p)})});
+function show(p){document.querySelectorAll('.page').forEach(function(s){s.classList.toggle('on',s.id==='pg-'+p)});
+  document.querySelectorAll('nav button').forEach(function(b){if(b.dataset.p===p)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
+  history.replaceState(null,'','#'+p);window.scrollTo(0,0)}
+
+/* sortable tables */
+function sortable(id,rows,render){var t=document.getElementById(id);t.querySelectorAll('th[data-k]').forEach(function(th){
+  th.addEventListener('click',function(){var k=th.dataset.k,num=th.dataset.t==='n',asc=th.getAttribute('aria-sort')!=='ascending'&&(k==='rank'||k==='pick'||!num)?true:th.getAttribute('aria-sort')==='descending';
+    if(th.getAttribute('aria-sort')==='ascending')asc=false;
+    rows.sort(function(a,b){var x=a[k],y=b[k];if(x==null)x=num?-1e9:'';if(y==null)y=num?-1e9:'';
+      if(k==='streak'){x=(x[0]==='W'?1:-1)*parseInt(x.slice(1)||0);y=(y[0]==='W'?1:-1)*parseInt(y.slice(1)||0)}
+      return (x>y?1:x<y?-1:0)*(asc?1:-1)});
+    t.querySelectorAll('th').forEach(function(h){h.removeAttribute('aria-sort')});th.setAttribute('aria-sort',asc?'ascending':'descending');render(rows)})})}
+
+/* standings */
+function renderPrizes(){var h='';D.months.forEach(function(m){var who='',st='';
+  if(m.status==='final'){who=m.leaders.join(' / ');st='Winner'+(m.leaders.length>1?'s (split)':'')}
+  else if(m.status==='live'){who=m.leaders.length?m.leaders.join(' / '):'-';st=m.leaders.length?'Leading now':'In progress'}
+  else{who='-';st='Starts '+fdate(m.start)}
+  h+='<div class="prize'+(m.status==='live'?' live':'')+'"><div class="nm">'+m.label+'</div><div class="dates">'+fdate(m.start)+' to '+fdate(m.end)+'</div>'+
+     '<div class="amt">$'+m.prize+'</div><div class="who" style="color:'+(who&&who!=='-'?oc(m.leaders[0]):'var(--dim2)')+'">'+who+'</div><div class="st">'+st+'</div></div>'});
+  var L=D.standings.filter(function(r){return r.rank===1});
+  h+='<div class="prize champ"><div class="nm">Season champion</div><div class="dates">Full regular season</div><div class="amt">$'+D.champ_prize+'</div>'+
+     (D.games_counted?'<div class="who" style="color:'+oc(L[0].owner)+'">'+L.map(function(r){return r.owner}).join(' / ')+'</div><div class="st">'+(D.today>D.season_end?'Champion':'Leading now')+'</div></div>':'<div class="who dim">-</div><div class="st">Starts '+fdate(D.season_start)+'</div></div>');
+  document.getElementById('prizes').innerHTML=h}
+function renderSt(rows){var top=D.standings[0].pct||1;document.querySelector('#t-st tbody').innerHTML=rows.map(function(r){
+  return '<tr><td class="l rk">'+ordinal(r.rank)+'</td><td class="l own" style="color:'+oc(r.owner)+'">'+r.owner+'</td><td class="l hm"><div class="chips">'+r.teams.map(chip).join('')+'</div></td>'+
+  '<td>'+r.w+'</td><td>'+r.l+'</td><td class="pct">'+pct(r.pct)+'<span class="bar" style="color:'+oc(r.owner)+'"><b style="width:'+(r.pct?Math.round(r.pct*100):0)+'%"></b></span></td>'+
+  '<td class="hm '+cls(r.pd)+'">'+sg(r.pd)+'</td><td>'+(r.gb===0?'-':r.gb.toFixed(1))+'</td></tr>'}).join('')}
+function renderRace(){var R=D.race;var ds=D.owners.map(function(o){return{label:o,data:R.series[o],borderColor:oc(o),backgroundColor:oc(o),borderWidth:2,pointRadius:0,tension:.25}});
+  charts.race=new Chart(document.getElementById('c-race'),{type:'line',data:{labels:R.dates.map(fdate),datasets:ds},
+  options:baseOpts(function(v){return pct(v)})})}
+function baseOpts(fmt){return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+  plugins:{legend:{labels:{color:'#a9a0d6',font:{family:'Chakra Petch',size:12},boxWidth:12}},
+    tooltip:{itemSort:function(a,b){return b.parsed.y-a.parsed.y},callbacks:{label:function(c){return c.dataset.label+'  '+fmt(c.parsed.y)}}}},
+  scales:{x:{ticks:{color:'#7a71ab',font:{family:'Chakra Petch'}},grid:{color:'rgba(58,50,112,.35)'}},
+          y:{ticks:{color:'#7a71ab',font:{family:'Chakra Petch'},callback:fmt},grid:{color:'rgba(58,50,112,.35)'}}}}}
+
+/* monthly */
+function renderTabs(){var live=D.months.filter(function(m){return m.status==='live'})[0];
+  var last=D.months.filter(function(m){return m.status!=='upcoming'}).pop();curMonth=curMonth||(live||last||D.months[0]).key;
+  document.getElementById('mtabs').innerHTML=D.months.map(function(m){var st=m.status==='final'?'Final':m.status==='live'?'In progress':'Upcoming';
+    return '<button class="tab" role="tab" data-m="'+m.key+'" aria-selected="'+(m.key===curMonth)+'"'+(m.status==='upcoming'?' disabled':'')+'>'+m.label+' ('+m.short+')<small>'+st+'</small></button>'}).join('');
+  document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){curMonth=b.dataset.m;renderTabs();renderMonth()})})}
+function renderMonth(){var m=D.months.filter(function(x){return x.key===curMonth})[0];var rows=m.rows.slice();
+  if(!m.leaders.length){document.getElementById('mcallout').innerHTML='<div class="callout"><span>No games final yet this month.</span><span class="dim">'+fdate(m.start)+' to '+fdate(m.end)+'</span></div>'}
+  var lead=m.leaders.map(function(o){return '<strong style="color:'+oc(o)+'">'+o+'</strong>'}).join(' and ');
+  if(m.leaders.length)document.getElementById('mcallout').innerHTML='<div class="callout"><span>'+(m.status==='final'?'Final: '+lead+(m.leaders.length>1?' split':' wins')+' $'+m.prize:'Leading: '+lead+'. Month ends '+fdate(m.end)+'.')+'</span><span class="dim">'+fdate(m.start)+' to '+fdate(m.end)+'</span></div>';
+  function draw(rs){document.querySelector('#t-mo tbody').innerHTML=rs.map(function(r){return '<tr><td class="l rk">'+ordinal(r.rank)+'</td><td class="l own" style="color:'+oc(r.owner)+'">'+r.owner+'</td><td>'+r.w+'</td><td>'+r.l+'</td><td class="pct">'+pct(r.pct)+'</td><td class="'+cls(r.pd)+'">'+sg(r.pd)+'</td><td class="hm">'+r.gp+'</td></tr>'}).join('')}
+  draw(rows);var t=document.getElementById('t-mo');var c=t.cloneNode(true);t.parentNode.replaceChild(c,t);sortable('t-mo',rows,draw);
+  if(charts.mo)charts.mo.destroy();
+  charts.mo=new Chart(document.getElementById('c-mo'),{type:'bar',data:{labels:m.rows.map(function(r){return r.owner}),
+    datasets:[{data:m.rows.map(function(r){return r.pct}),backgroundColor:m.rows.map(function(r){return oc(r.owner)}),borderRadius:2}]},
+    options:Object.assign(baseOpts(function(v){return pct(v)}),{scales:{x:{ticks:{color:'#a9a0d6',font:{family:'Chakra Petch'}},grid:{display:false}},y:{beginAtZero:true,suggestedMax:.8,ticks:{color:'#7a71ab',font:{family:'Chakra Petch'},callback:function(v){return pct(v)}},grid:{color:'rgba(58,50,112,.35)'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return pct(c.parsed.y)}}}}})});
+  var h='';m.rows.forEach(function(r){h+='<tr class="grp"><td class="l" colspan="5" style="color:'+oc(r.owner)+'">'+r.owner+'</td></tr>';
+    r.teams.forEach(function(a){var t=teamByAbbr(a),s=t.monthly[m.key];h+='<tr><td class="l">'+t.name+'</td><td>'+s.w+'</td><td>'+s.l+'</td><td>'+pct(s.pct)+'</td><td class="'+cls(s.pd)+'">'+sg(s.pd)+'</td></tr>'})});
+  document.querySelector('#t-mt tbody').innerHTML=h}
+
+/* teams */
+function renderTeams(rows){document.querySelector('#t-tm tbody').innerHTML=rows.map(function(t){
+  return '<tr><td>'+t.pick+'</td><td class="l"><strong>'+t.abbr+'</strong> <span class="dim hm">'+t.name+'</span></td><td class="l own" style="color:'+oc(t.owner)+'">'+t.owner+'</td>'+
+  '<td>'+t.w+'</td><td>'+t.l+'</td><td class="pct">'+pct(t.pct)+'</td><td class="dim">'+pct(t.exp_pct)+'</td><td class="hm '+cls(t.pd)+'">'+sg(t.pd)+'</td>'+
+  '<td class="l hm">'+(t.streak||'-')+'</td><td class="l hm">'+t.recent.map(function(g){return '<span class="wl '+g.r+'" title="'+fdate(g.d)+(g.h?' vs ':' at ')+g.o+' '+g.s+'">'+g.r+'</span>'}).join('')+'</td>'+
+  '<td>'+(t.pace==null?'-':t.pace.toFixed(1))+'</td><td class="hm">'+t.vegas+'</td><td class="'+cls(t.vs_vegas)+'">'+(t.vs_vegas==null?'-':(t.vs_vegas>0?'+':'')+t.vs_vegas.toFixed(1))+'</td></tr>'}).join('')}
+
+/* vegas vs projected dumbbell */
+function renderDumb(){var rows=D.teams.slice(),has=rows.some(function(t){return t.pace!=null});
+  if(!has){document.getElementById('dumb').innerHTML='<p class="dim">Projections appear once teams have played.</p>';return}
+  rows.sort(function(a,b){return (b.vs_vegas==null?-99:b.vs_vegas)-(a.vs_vegas==null?-99:a.vs_vegas)});
+  var lo=82,hi=0;rows.forEach(function(t){lo=Math.min(lo,t.vegas,t.pace==null?t.vegas:t.pace);hi=Math.max(hi,t.vegas,t.pace==null?t.vegas:t.pace)});
+  lo=Math.max(0,Math.floor((lo-3)/10)*10);hi=Math.min(82,Math.ceil((hi+3)/10)*10);
+  function x(v){return ((v-lo)/(hi-lo)*100).toFixed(2)+'%'}
+  var grid='';for(var g=lo;g<=hi;g+=10)grid+='<div class="grid" style="left:'+x(g)+'"></div>';
+  var h=rows.map(function(t){var c=oc(t.owner),p=t.pace;
+    var line=p==null?'':'<div class="ln" style="left:'+x(Math.min(p,t.vegas))+';width:calc('+x(Math.max(p,t.vegas))+' - '+x(Math.min(p,t.vegas))+');background:'+(p>=t.vegas?'var(--win)':'var(--loss)')+';opacity:.55"></div>';
+    return '<div class="db" title="'+t.name+' ('+t.owner+'): Vegas '+t.vegas+', pace '+(p==null?'-':p.toFixed(1))+'"><span class="nm" style="color:'+c+'">'+t.abbr+'</span>'+
+      '<div class="track">'+grid+line+'<div class="v" style="left:'+x(t.vegas)+'"></div>'+(p==null?'':'<div class="p" style="left:'+x(p)+';background:'+c+'"></div>')+'</div>'+
+      '<span class="gap '+cls(t.vs_vegas)+'">'+(t.vs_vegas==null?'-':(t.vs_vegas>0?'+':'')+t.vs_vegas.toFixed(1))+'</span></div>'}).join('');
+  var ticks='';for(var k=lo;k<=hi;k+=10)ticks+='<span style="left:'+x(k)+'">'+k+'</span>';
+  document.getElementById('dumb').innerHTML=h+'<div class="axis"><span></span><div class="ticks">'+ticks+'</div><span>wins</span></div>'}
+
+/* best and worst picks */
+function vtxt(v){return v==null?'-':(v>0?'+':v<0?'-':'')+Math.abs(v).toFixed(3).replace(/^0/,'')}
+function renderBW(){var rs=D.draft_value.filter(function(r){return r.value!=null});
+  if(!rs.length){document.getElementById('best').innerHTML=document.getElementById('worst').innerHTML='<p class="dim">Appears once teams have played.</p>';return}
+  var s=rs.slice().sort(function(a,b){return b.value-a.value});
+  function row(r){return '<div class="bwrow"><span class="pk">PICK '+r.pick+'</span><strong>'+r.abbr+'</strong><span class="own" style="color:'+oc(r.owner)+'">'+r.owner+'</span><span class="v '+cls(r.value)+'">'+vtxt(r.value)+'</span></div>'}
+  document.getElementById('best').innerHTML=s.slice(0,5).map(row).join('');
+  document.getElementById('worst').innerHTML=s.slice(-5).reverse().map(row).join('')}
+function renderDV(rows){var mx=0;D.draft_value.forEach(function(r){if(r.value!=null)mx=Math.max(mx,Math.abs(r.value))});mx=mx||1;
+  document.querySelector('#t-dv tbody').innerHTML=rows.map(function(r){var w=r.value==null?0:Math.abs(r.value)/mx*50;
+    var bar='<span class="vbar"><b style="'+(r.value>=0?'left:50%':'right:50%')+';width:'+w+'%;background:'+(r.value>=0?'var(--win)':'var(--loss)')+'"></b></span>';
+    return '<tr><td>'+r.pick+'</td><td class="l"><strong>'+r.abbr+'</strong> <span class="dim hm">'+r.name+'</span></td><td class="l own" style="color:'+oc(r.owner)+'">'+r.owner+'</td>'+
+    '<td>'+pct(r.actual_pct)+'</td><td>'+pct(r.optimal_pct)+'</td><td class="'+cls(r.value)+'">'+vtxt(r.value)+'</td><td class="l hm">'+bar+'</td></tr>'}).join('')}
+
+/* draft board */
+function renderBoard(){var byPick={};D.teams.forEach(function(t){byPick[t.pick]=t});
+  var h='<div class="hd">Owner</div><div class="hd">Round 1</div><div class="hd">Round 2</div><div class="hd">Round 3</div><div class="hd tot">25-26 W / Vegas</div><div class="hd tot">Wins now</div>';
+  D.draft_slots.forEach(function(s){var ps=[byPick[s.r1],byPick[s.r2],byPick[s.r3]],o=ps[0].owner;
+    var w25=0,veg=0,w=0;ps.forEach(function(p){w25+=p.w2025;veg+=p.vegas;w+=p.w});
+    h+='<div class="cell slot" style="border-left-color:'+oc(o)+'"><span class="pk">SLOT '+s.slot+'</span><span class="own" style="color:'+oc(o)+'">'+o+'</span></div>';
+    ps.forEach(function(p){h+='<div class="cell"><div class="pk">PICK '+p.pick+'</div><div class="tm">'+p.abbr+'</div><div class="meta">'+p.name+' &middot; Vegas '+p.vegas+'</div></div>'});
+    h+='<div class="cell tot">'+w25+' / '+veg.toFixed(1)+'</div><div class="cell tot"><strong>'+w+'</strong></div>'});
+  document.getElementById('board').innerHTML=h}
+
+/* rules */
+function renderRules(){var pay=D.months.map(function(m){return '<li><strong>'+m.label+'</strong> ('+fdate(m.start)+' to '+fdate(m.end)+'): $'+m.prize+' for the best win % in that window</li>'}).join('');
+  document.getElementById('rules').innerHTML='<h1>Rules</h1>'+
+  '<h2>How it works</h2><p>Ten owners each draft three NBA teams. Every regular-season win and loss counts. Playoff and play-in games do not. NBA Cup games count, except the Cup championship game, which is not part of the official standings.</p>'+
+  '<h2>Payouts ($500 pot)</h2><ul>'+pay+'<li><strong>Season champion</strong>: $'+D.champ_prize+' for the best cumulative win %</li></ul><p>One owner can win more than one prize.</p>'+
+  '<h2>Scoring and tiebreakers</h2><p>Win % = total wins of your 3 teams divided by total games they played. Ties go to the higher combined point differential over the same period. If still tied, the prize is split evenly.</p>'+
+  '<h2>The draft</h2><p>The order is built so no slot starts with an edge: early first-round picks get late picks in rounds 2 and 3, and the reverse. Slots were assigned by random draw. Any available team could be taken on your turn.</p>'+
+  '<h2>Fine print</h2><p>Rosters are locked for the season, no trades. Anything the rules do not cover is decided by the commissioner.</p>'}
+
+function init(d){D=d;document.getElementById('upd').textContent='Updated '+d.updated+(d.data_through?', games through '+fdate(d.data_through):'');
+  renderPrizes();var st=D.standings.slice();renderSt(st);sortable('t-st',st,renderSt);renderRace();
+  renderTabs();renderMonth();var tm=D.teams.slice();renderTeams(tm);sortable('t-tm',tm,renderTeams);renderDumb();
+  renderBoard();renderBW();var dv=D.draft_value.slice();renderDV(dv);sortable('t-dv',dv,renderDV);renderRules();
+  var n=document.getElementById('notice');
+  if(!D.games_counted){n.textContent='The season tips off '+fdate(D.season_start)+'. Results appear after the first daily update once games are final.';n.hidden=false}
+  var h=location.hash.slice(1);if(h&&document.getElementById('pg-'+h))show(h)}
+if(window.MOCK_DATA)init(window.MOCK_DATA);
+else fetch('data.json?_='+Date.now()).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(init)
+  .catch(function(e){document.getElementById('upd').textContent='Could not load data.json ('+e.message+'). Check the latest Actions run.'});
+</script>
+</body>
+</html>
