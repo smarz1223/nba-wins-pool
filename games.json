@@ -1,1 +1,30 @@
-{"source": "none", "fetched": null, "games": []}
+{
+"source": "ESPN",
+"fetched": "2026-10-21T11:44-04:00",
+"games": [
+{
+"id": "espn-401909088",
+"date": "2026-10-20",
+"home": "DET",
+"away": "BOS",
+"hs": 121,
+"as": 113
+},
+{
+"id": "espn-401909089",
+"date": "2026-10-20",
+"home": "NYK",
+"away": "PHI",
+"hs": 100,
+"as": 106
+},
+{
+"id": "espn-401909090",
+"date": "2026-10-20",
+"home": "SAS",
+"away": "OKC",
+"hs": 104,
+"as": 116
+}
+]
+}
