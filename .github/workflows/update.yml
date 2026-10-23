@@ -2,8 +2,11 @@ name: Update NBA Wins data
 
 on:
   schedule:
-    # 11:37 UTC daily = 7:37 AM EDT / 6:37 AM EST. Off the :00 mark, which GitHub delays.
+    # Main run: 11:37 UTC = 7:37 AM EDT / 6:37 AM EST
     - cron: "37 11 * * *"
+    # Backup run in case GitHub delays or skips the main one: 13:07 UTC = 9:07 AM EDT / 8:07 AM EST
+    # Safe to run twice: the second run just refreshes the "Updated" time.
+    - cron: "7 13 * * *"
   workflow_dispatch:   # adds a "Run workflow" button on the Actions tab
 
 permissions:
