@@ -97,15 +97,13 @@ tbody tr:hover td{background:var(--panel2)}
 .wl{font-weight:700;font-size:11px;display:inline-block;width:17px;text-align:center;border-radius:3px;margin-left:2px}
 .wl.W{background:rgba(30,142,62,.14);color:var(--win)}.wl.L{background:rgba(198,40,40,.12);color:var(--loss)}
 /* draft board */
-.board{display:grid;grid-template-columns:auto repeat(3,1fr) auto auto;gap:6px;align-items:stretch;min-width:720px}
-.board .hd{font-size:12px;color:var(--dim);font-weight:700;padding:0 4px 4px;text-transform:uppercase;letter-spacing:.5px}
-.cell{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:8px 10px;font-size:13px}
-.cell .pk{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--dim2)}
-.cell .tm{font-family:var(--disp);font-size:24px;line-height:1.05;letter-spacing:.5px}
-.cell .meta{font-size:11px;color:var(--dim)}
-.slot{display:flex;flex-direction:column;justify-content:center;border-left:5px solid;background:var(--panel)}
-.tot{text-align:right;font-variant-numeric:tabular-nums}
 .mb{margin-bottom:14px}
+.compact{display:inline-block;max-width:100%;padding:10px 14px}
+.compact table{width:auto}
+.compact td,.compact th{padding:5px 10px;font-size:14px}
+.compact td.l{padding-right:18px}
+.compact .grp td{padding-top:10px}
+td.heat{font-weight:700;text-align:center;min-width:64px}
 .dkey{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-bottom:12px}
 .dkey i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .dkey .dv{border:2px solid var(--navy);background:#fff}.dkey .dp{background:var(--ball)}
@@ -142,7 +140,7 @@ h3.bw{font-family:var(--disp);font-size:22px;font-weight:400;letter-spacing:.6px
     <button data-p="standings" aria-current="page">Standings</button>
     <button data-p="monthly">Monthly</button>
     <button data-p="teams">Teams</button>
-    <button data-p="draft">Draft Board</button>
+    <button data-p="draft">Draft Picks</button>
     <button data-p="rules">Rules</button>
   </nav>
 </div></header>
@@ -175,7 +173,7 @@ h3.bw{font-family:var(--disp);font-size:22px;font-weight:400;letter-spacing:.6px
     <div class="panel"><div class="chartbox"><canvas id="c-mo" aria-label="Win % by owner for the selected month"></canvas></div></div>
   </div>
   <h2>Teams this month</h2>
-  <div class="panel scroll"><table id="t-mt"><thead><tr><th class="l">Team</th><th>W</th><th>L</th><th>Win %</th><th>Pt Diff</th></tr></thead><tbody></tbody></table></div>
+  <div class="panel scroll compact"><table id="t-mt"><thead><tr><th class="l">Team</th><th>W</th><th>L</th><th>Win %</th><th>Pt Diff</th></tr></thead><tbody></tbody></table></div>
 </section>
 
 <section id="pg-teams" class="page">
@@ -196,10 +194,7 @@ h3.bw{font-family:var(--disp);font-size:22px;font-weight:400;letter-spacing:.6px
 </section>
 
 <section id="pg-draft" class="page">
-  <h1>Draft Board</h1>
-  <p class="sub">Balanced draft order: an early first-round pick comes with late picks in rounds 2 and 3. Totals compare last season's wins and Vegas totals with wins so far.</p>
-  <div class="panel scroll"><div class="board" id="board"></div></div>
-  <h2>Best and worst picks</h2>
+  <h1>Draft Picks</h1>
   <p class="sub">Each pick is compared with the team that actually holds that rank in the league. Pick 1 is measured against the best win % in the NBA, pick 2 against the second best, and so on. Value is the gap in win %.</p>
   <div class="split mb">
     <div class="panel"><h3 class="bw">Best picks</h3><div id="best"></div></div>
@@ -223,6 +218,13 @@ var D=null,charts={},curMonth=null;
 function pct(v){return v==null?'-':(v>=1?'1.000':v.toFixed(3).replace(/^0/,''))}
 function sg(v){return v==null?'-':(v>0?'+'+v:''+v)}
 function cls(v){return v>0?'pos':(v<0?'neg':'dim')}
+/* win % heat: .250 and below red, .500 white, .750 and above green; text flips for contrast */
+function heat(v){if(v==null)return '';var R=[198,40,40],W=[255,255,255],G=[30,142,62];
+  var t=Math.max(0,Math.min(1,(v-.25)/.5)),a,b,f;if(t<.5){a=R;b=W;f=t/.5}else{a=W;b=G;f=(t-.5)/.5}
+  var c=[0,1,2].map(function(i){return Math.round(a[i]+(b[i]-a[i])*f)});
+  var lum=[0,1,2].map(function(i){var x=c[i]/255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4)});
+  var L=.2126*lum[0]+.7152*lum[1]+.0722*lum[2];
+  return 'background:rgb('+c.join(',')+');color:'+(1.05/(L+.05)>(L+.05)/.0656?'#fff':'#16213a')}
 function fdate(s){var d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}
 function teamByAbbr(a){for(var i=0;i<D.teams.length;i++)if(D.teams[i].abbr===a)return D.teams[i]}
 function chip(a){var t=teamByAbbr(a);
@@ -259,7 +261,7 @@ function renderSt(rows){var top=D.standings[0].pct||1;document.querySelector('#t
   return '<tr><td class="l rk">'+r.rank+'</td><td class="l own" style="color:'+oc(r.owner)+'">'+r.owner+'</td><td class="l hm"><div class="chips">'+r.teams.map(chip).join('')+'</div></td>'+
   '<td>'+r.w+'</td><td>'+r.l+'</td><td class="pct">'+pct(r.pct)+'<span class="bar" style="color:'+oc(r.owner)+'"><b style="width:'+(r.pct?Math.round(r.pct*100):0)+'%"></b></span></td>'+
   '<td class="hm '+cls(r.pd)+'">'+sg(r.pd)+'</td><td>'+(r.gb===0?'-':r.gb.toFixed(1))+'</td></tr>'}).join('')}
-function renderRace(){var R=D.race;var ds=D.owners.map(function(o){return{label:o,data:R.series[o],borderColor:oc(o),backgroundColor:oc(o),borderWidth:2,pointRadius:0,tension:.25}});
+function renderRace(){var R=D.race;var ds=D.owners.map(function(o){return{label:o,data:R.series[o],borderColor:oc(o),backgroundColor:oc(o),borderWidth:2,pointRadius:R.dates.length<15?3:0,pointHoverRadius:4,cubicInterpolationMode:'monotone',spanGaps:true}});
   charts.race=new Chart(document.getElementById('c-race'),{type:'line',data:{labels:R.dates.map(fdate),datasets:ds},
   options:baseOpts(function(v){return pct(v)})})}
 function baseOpts(fmt){return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
@@ -285,7 +287,7 @@ function renderMonth(){var m=D.months.filter(function(x){return x.key===curMonth
     datasets:[{data:m.rows.map(function(r){return r.pct}),backgroundColor:m.rows.map(function(r){return oc(r.owner)}),borderRadius:2}]},
     options:Object.assign(baseOpts(function(v){return pct(v)}),{scales:{x:{ticks:{color:'#5b5446',font:{family:'Barlow'}},grid:{display:false}},y:{beginAtZero:true,suggestedMax:.8,ticks:{color:'#8a7f6c',font:{family:'Barlow'},callback:function(v){return pct(v)}},grid:{color:'rgba(110,62,18,.12)'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return pct(c.parsed.y)}}}}})});
   var h='';m.rows.forEach(function(r){h+='<tr class="grp"><td class="l" colspan="5" style="color:'+oc(r.owner)+'">'+r.owner+'</td></tr>';
-    r.teams.forEach(function(a){var t=teamByAbbr(a),s=t.monthly[m.key];h+='<tr><td class="l">'+t.name+'</td><td>'+s.w+'</td><td>'+s.l+'</td><td>'+pct(s.pct)+'</td><td class="'+cls(s.pd)+'">'+sg(s.pd)+'</td></tr>'})});
+    r.teams.forEach(function(a){var t=teamByAbbr(a),s=t.monthly[m.key];h+='<tr><td class="l"><strong>'+t.abbr+'</strong> <span class="dim hm">'+t.name+'</span></td><td>'+s.w+'</td><td>'+s.l+'</td><td class="heat" style="'+heat(s.pct)+'">'+pct(s.pct)+'</td><td class="'+cls(s.pd)+'">'+sg(s.pd)+'</td></tr>'})});
   document.querySelector('#t-mt tbody').innerHTML=h}
 
 /* teams */
@@ -325,16 +327,6 @@ function renderDV(rows){var mx=0;D.draft_value.forEach(function(r){if(r.value!=n
     return '<tr><td>'+r.pick+'</td><td class="l"><strong>'+r.abbr+'</strong> <span class="dim hm">'+r.name+'</span></td><td class="l own" style="color:'+oc(r.owner)+'">'+r.owner+'</td>'+
     '<td>'+pct(r.actual_pct)+'</td><td>'+pct(r.optimal_pct)+'</td><td class="'+cls(r.value)+'">'+vtxt(r.value)+'</td><td class="l hm">'+bar+'</td></tr>'}).join('')}
 
-/* draft board */
-function renderBoard(){var byPick={};D.teams.forEach(function(t){byPick[t.pick]=t});
-  var h='<div class="hd">Owner</div><div class="hd">Round 1</div><div class="hd">Round 2</div><div class="hd">Round 3</div><div class="hd tot">25-26 W / Vegas</div><div class="hd tot">Wins now</div>';
-  D.draft_slots.forEach(function(s){var ps=[byPick[s.r1],byPick[s.r2],byPick[s.r3]],o=ps[0].owner;
-    var w25=0,veg=0,w=0;ps.forEach(function(p){w25+=p.w2025;veg+=p.vegas;w+=p.w});
-    h+='<div class="cell slot" style="border-left-color:'+oc(o)+'"><span class="pk">SLOT '+s.slot+'</span><span class="own" style="color:'+oc(o)+'">'+o+'</span></div>';
-    ps.forEach(function(p){h+='<div class="cell"><div class="pk">PICK '+p.pick+'</div><div class="tm">'+p.abbr+'</div><div class="meta">'+p.name+' &middot; Vegas '+p.vegas+'</div></div>'});
-    h+='<div class="cell tot">'+w25+' / '+veg.toFixed(1)+'</div><div class="cell tot"><strong>'+w+'</strong></div>'});
-  document.getElementById('board').innerHTML=h}
-
 /* rules */
 function renderRules(){var pay=D.months.map(function(m){return '<li><strong>'+m.label+'</strong> ('+fdate(m.start)+' to '+fdate(m.end)+'): $'+m.prize+' for the best win % in that window</li>'}).join('');
   document.getElementById('rules').innerHTML='<h1>Rules</h1>'+
@@ -347,7 +339,7 @@ function renderRules(){var pay=D.months.map(function(m){return '<li><strong>'+m.
 function init(d){D=d;document.getElementById('upd').textContent='Updated '+d.updated+(d.data_through?', games through '+fdate(d.data_through):'');
   renderPrizes();var st=D.standings.slice();renderSt(st);sortable('t-st',st,renderSt);renderRace();
   renderTabs();renderMonth();var tm=D.teams.slice();renderTeams(tm);sortable('t-tm',tm,renderTeams);renderDumb();
-  renderBoard();renderBW();var dv=D.draft_value.slice();renderDV(dv);sortable('t-dv',dv,renderDV);renderRules();
+  renderBW();var dv=D.draft_value.slice();renderDV(dv);sortable('t-dv',dv,renderDV);renderRules();
   var n=document.getElementById('notice');
   if(!D.games_counted){n.textContent='The season tips off '+fdate(D.season_start)+'. Results appear after the first daily update once games are final.';n.hidden=false}
   var h=location.hash.slice(1);if(h&&document.getElementById('pg-'+h))show(h)}

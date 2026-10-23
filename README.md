@@ -5,8 +5,9 @@ Live at **https://nbawins.redplanetanalytics.com**
 ## How it works
 
 - `fetch_data.py` runs daily in GitHub Actions. It downloads every final
-  regular-season game from the NBA's public schedule file (ESPN scoreboard as
-  a fallback), then writes `games.json` and `data.json`.
+  regular-season game from ESPN's public scoreboard (the NBA's schedule file is
+  the fallback, since it usually blocks GitHub), then writes `games.json` and
+  `data.json`.
 - `index.html` reads `data.json`. No Google Sheet is involved.
 - Monthly prizes are computed from game-level results, so a missed run is
   backfilled automatically the next day.
@@ -22,7 +23,7 @@ Live at **https://nbawins.redplanetanalytics.com**
 | `data.json` | Generated each day (starts as a pre-season placeholder) |
 | `games.json` | Generated each day: every counted game |
 | `CNAME` | Custom domain |
-| `.github/workflows/update.yml` | Daily schedule (7:37 AM EDT / 6:37 AM EST) |
+| `.github/workflows/update.yml` | Daily at 7:37 AM EDT / 6:37 AM EST, backup run at 9:07 AM EDT / 8:07 AM EST |
 
 ## Setup (one time)
 

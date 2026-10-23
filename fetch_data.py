@@ -8,9 +8,9 @@ no Google Sheet. Writes:
   data.json   - everything index.html displays
 
 HOW RESULTS ARE SOURCED
-  1. Primary: the NBA's public season schedule file (cdn.nba.com). One request
-     returns every game of the season with final scores.
-  2. Fallback: ESPN's public scoreboard, one request per day of the season.
+  1. Primary: ESPN's public scoreboard, one request per day of the season.
+  2. Fallback: the NBA's public season schedule file (cdn.nba.com). It blocks
+     GitHub's servers most days, so it is only a backup.
   3. If both fail, the script exits with an error and changes nothing, so the
      site keeps showing the last good data and the Actions run shows a red X.
 
@@ -101,7 +101,18 @@ def eastern_now():
         return dt.datetime.utcnow() - dt.timedelta(hours=5)
 
 
-def fetch_json(url, timeout=30):
+def fetch_json(url, timeout=30, tries=3):
+    import time
+    for i in range(tries):
+        try:
+            return _fetch_once(url, timeout)
+        except Exception:
+            if i == tries - 1:
+                raise
+            time.sleep(2 * (i + 1))
+
+
+def _fetch_once(url, timeout):
     req = urllib.request.Request(url, headers={
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
         "Accept": "application/json, text/plain, */*",
@@ -286,11 +297,11 @@ def compute(games, today, updated):
         leaders = [r["owner"] for r in rows if r["rank"] == 1 and r["gp"]]
         months.append({**m, "status": status, "rows": rows, "leaders": leaders})
 
-    # Weekly cumulative win % for the season race chart (each Sunday plus today)
+    # Daily cumulative win % for the season race chart: one point per calendar day,
+    # rebuilt from game results every run (no history file needed)
     points, d = [], dt.date.fromisoformat(SEASON_START)
     while d <= today and d.isoformat() <= SEASON_END:
-        if d.weekday() == 6 or d == today:
-            points.append(d.isoformat())
+        points.append(d.isoformat())
         d += dt.timedelta(days=1)
     race = {o: [] for o in owners_order}
     for p in points:
@@ -340,16 +351,16 @@ def main():
 
     games, source = None, None
     try:
-        print("Fetching NBA schedule feed...")
-        games, source = fetch_from_nba(), "NBA"
+        print("Fetching ESPN scoreboard (one request per day)...")
+        games, source = fetch_from_espn(today), "ESPN"
     except Exception as e:
-        print(f"  NBA feed failed: {e}")
+        print(f"  ESPN failed: {e}")
     if games is None:
         try:
-            print("Falling back to ESPN scoreboard...")
-            games, source = fetch_from_espn(today), "ESPN"
+            print("Falling back to NBA schedule feed...")
+            games, source = fetch_from_nba(), "NBA"
         except Exception as e:
-            print(f"  ESPN fallback failed: {e}")
+            print(f"  NBA feed fallback failed: {e}")
     if games is None:
         print("ERROR: no data source worked. Leaving data.json unchanged.")
         sys.exit(1)
