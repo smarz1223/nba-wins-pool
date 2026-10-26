@@ -98,6 +98,13 @@ tbody tr:hover td{background:var(--panel2)}
 .wl.W{background:rgba(30,142,62,.14);color:var(--win)}.wl.L{background:rgba(198,40,40,.12);color:var(--loss)}
 /* draft board */
 .mb{margin-bottom:14px}
+.hint{font-size:12px;color:var(--dim2);margin-bottom:8px}
+.leg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.leg-item{display:inline-flex;align-items:center;gap:6px;font:700 12px var(--ui);letter-spacing:.3px;cursor:pointer;padding:4px 9px;border-radius:999px;border:1px solid var(--line2);background:var(--panel);color:var(--text);transition:opacity .15s,background .15s}
+.leg-item:hover{background:var(--panel2)}
+.leg-item.ldim{opacity:.3}
+.leg-item.lhi{border-color:var(--navy);background:var(--panel2);box-shadow:0 0 0 1px var(--navy) inset}
+.leg-item .dot{width:10px;height:10px;border-radius:50%;flex:none}
 .compact{display:inline-block;max-width:100%;padding:10px 14px}
 .compact table{width:auto}
 .compact td,.compact th{padding:5px 10px;font-size:14px}
@@ -157,7 +164,9 @@ h3.bw{font-family:var(--disp);font-size:22px;font-weight:400;letter-spacing:.6px
     <th data-k="pd" data-t="n" class="hm">Pt Diff</th><th data-k="gb" data-t="n">GB</th></tr></thead><tbody></tbody></table>
   </div>
   <h2>Season race</h2>
-  <div class="panel"><div class="chartbox"><canvas id="c-race" aria-label="Cumulative win % by owner over the season"></canvas></div></div>
+  <div class="panel"><div class="hint">Click a name to highlight it. Click it again to show everyone.</div>
+    <div class="leg" id="race-leg"></div>
+    <div class="chartbox"><canvas id="c-race" aria-label="Cumulative win % by owner over the season"></canvas></div></div>
 </section>
 
 <section id="pg-monthly" class="page">
@@ -214,7 +223,7 @@ h3.bw{font-family:var(--disp);font-size:22px;font-weight:400;letter-spacing:.6px
 var OC={'JOLLZ':'#d9480f','BAGS':'#b7791f','KEV':'#0b7285','KARDIAN':'#c2255c','ADAM B':'#2b8a3e',
         'ANT':'#6741d9','MARZ':'#c92a2a','DOM':'#343a40','FUR':'#8b5e34','PHIL':'#1c5fd4'};
 function oc(o){return OC[o]||'#ccc'}
-var D=null,charts={},curMonth=null;
+var D=null,charts={},curMonth=null,activeLeg=null;
 function pct(v){return v==null?'-':(v>=1?'1.000':v.toFixed(3).replace(/^0/,''))}
 function sg(v){return v==null?'-':(v>0?'+'+v:''+v)}
 function cls(v){return v>0?'pos':(v<0?'neg':'dim')}
@@ -261,9 +270,21 @@ function renderSt(rows){var top=D.standings[0].pct||1;document.querySelector('#t
   return '<tr><td class="l rk">'+r.rank+'</td><td class="l own" style="color:'+oc(r.owner)+'">'+r.owner+'</td><td class="l hm"><div class="chips">'+r.teams.map(chip).join('')+'</div></td>'+
   '<td>'+r.w+'</td><td>'+r.l+'</td><td class="pct">'+pct(r.pct)+'<span class="bar" style="color:'+oc(r.owner)+'"><b style="width:'+(r.pct?Math.round(r.pct*100):0)+'%"></b></span></td>'+
   '<td class="hm '+cls(r.pd)+'">'+sg(r.pd)+'</td><td>'+(r.gb===0?'-':r.gb.toFixed(1))+'</td></tr>'}).join('')}
-function renderRace(){var R=D.race;var ds=D.owners.map(function(o){return{label:o,data:R.series[o],borderColor:oc(o),backgroundColor:oc(o),borderWidth:2,pointRadius:R.dates.length<15?3:0,pointHoverRadius:4,cubicInterpolationMode:'monotone',spanGaps:true}});
-  charts.race=new Chart(document.getElementById('c-race'),{type:'line',data:{labels:R.dates.map(fdate),datasets:ds},
-  options:baseOpts(function(v){return pct(v)})})}
+function renderRace(){var R=D.race,owners=D.standings.map(function(r){return r.owner});
+  document.getElementById('race-leg').innerHTML=owners.map(function(o){
+    return '<button type="button" class="leg-item" data-o="'+o+'" aria-pressed="false"><span class="dot" style="background:'+oc(o)+'"></span>'+o+'</button>'}).join('');
+  document.querySelectorAll('#race-leg .leg-item').forEach(function(b){b.addEventListener('click',function(){activeLeg=(activeLeg===b.dataset.o)?null:b.dataset.o;styleRace()})});
+  var ds=owners.map(function(o){return{label:o,data:R.series[o],borderColor:oc(o),backgroundColor:oc(o),borderWidth:2,pointRadius:R.dates.length<15?3:0,pointHoverRadius:4,cubicInterpolationMode:'monotone',spanGaps:true}});
+  var opts=baseOpts(function(v){return pct(v)});opts.plugins.legend={display:false};
+  charts.race=new Chart(document.getElementById('c-race'),{type:'line',data:{labels:R.dates.map(fdate),datasets:ds},options:opts});styleRace()}
+/* highlight one owner, grey out the rest; same behavior as the NFL and MLB sites */
+function styleRace(){var c=charts.race,few=D.race.dates.length<15;
+  c.data.datasets.forEach(function(d){var col=oc(d.label),on=activeLeg===d.label,dim=activeLeg&&!on;
+    d.borderColor=dim?col+'30':col;d.backgroundColor=dim?col+'30':col;d.pointBackgroundColor=dim?col+'30':col;
+    d.borderWidth=on?4:(dim?1.5:2);d.pointRadius=few?(on?5:3):(on?2:0);d.order=on?0:1});
+  c.update('none');
+  document.querySelectorAll('#race-leg .leg-item').forEach(function(b){var o=b.dataset.o;
+    b.classList.toggle('ldim',!!activeLeg&&activeLeg!==o);b.classList.toggle('lhi',activeLeg===o);b.setAttribute('aria-pressed',activeLeg===o)})}
 function baseOpts(fmt){return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
   plugins:{legend:{labels:{color:'#5b5446',font:{family:'Barlow',size:12},boxWidth:12}},
     tooltip:{itemSort:function(a,b){return b.parsed.y-a.parsed.y},callbacks:{label:function(c){return c.dataset.label+'  '+fmt(c.parsed.y)}}}},
